@@ -1,0 +1,1432 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حكايتنا 🤍</title>
+    <!-- استيراد خط كاييرو -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Cairo', sans-serif;
+            transition: background-color 0.4s ease, color 0.4s ease;
+        }
+
+        /* الوضع الافتراضي (الفاتح) */
+        body {
+            background: #fdf2f8;
+            background-image: radial-gradient(#f472b6 1px, transparent 1px);
+            background-size: 20px 20px;
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* ================= حاوية القلوب المتطايرة في الخلفية ================= */
+        .floating-heart-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(105vh) scale(0.5); opacity: 0; }
+            20% { opacity: 0.7; }
+            100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
+        }
+
+        .heart-particle {
+            position: absolute;
+            color: #f472b6;
+            font-size: 1.5rem;
+            animation: floatUp 5s linear infinite;
+        }
+
+        /* ================= 1. شاشة الباسورد ================= */
+        #lockScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #fdf2f8;
+            background-image: radial-gradient(#f472b6 1.5px, transparent 1.5px);
+            background-size: 25px 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            padding: 20px;
+        }
+
+        .lock-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 2px solid #fbcfe8;
+            padding: 35px 25px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(190, 24, 93, 0.15);
+            text-align: center;
+            max-width: 380px;
+            width: 100%;
+            z-index: 2;
+        }
+
+        .lock-card h2 {
+            color: #be185d;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .lock-card p {
+            color: #6b7280;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+        }
+
+        .lock-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #fda4af;
+            border-radius: 12px;
+            font-size: 1rem;
+            text-align: center;
+            outline: none;
+            color: #881337;
+            background: #fff1f2;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+        }
+
+        .lock-input:focus {
+            border-color: #be185d;
+            box-shadow: 0 0 10px rgba(190, 24, 93, 0.2);
+        }
+
+        .lock-btn {
+            background: #be185d;
+            color: #fff;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            box-shadow: 0 4px 15px rgba(190, 24, 93, 0.3);
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .lock-btn:hover {
+            background: #9d174d;
+            transform: scale(1.02);
+        }
+
+        .error-msg {
+            color: #e11d48;
+            font-size: 0.85rem;
+            margin-top: 10px;
+            display: none;
+        }
+
+
+        /* ================= 2. واجهة الترحيب (الكتابة المتتالية الحية) ================= */
+        #introScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #fdf2f8;
+            background-image: radial-gradient(#f472b6 1.5px, transparent 1.5px);
+            background-size: 25px 25px;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 998;
+            padding: 20px;
+        }
+
+        .intro-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            border: 2px solid #fbcfe8;
+            padding: 35px 25px;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(190, 24, 93, 0.15);
+            text-align: center;
+            max-width: 440px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            z-index: 2;
+        }
+
+        .intro-card h2 {
+            color: #be185d;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .intro-text {
+            color: #4b5563;
+            font-size: 1.1rem;
+            line-height: 1.9;
+            font-weight: 600;
+            min-height: 110px;
+            text-align: right;
+            padding: 10px;
+            background: #fff1f2;
+            border-radius: 12px;
+            border: 1px dashed #fda4af;
+        }
+
+        .next-btn {
+            background: #be185d;
+            color: #fff;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(190, 24, 93, 0.3);
+            transition: transform 0.2s ease, background 0.2s ease;
+            margin: 0 auto;
+            width: 150px;
+        }
+
+        .next-btn:hover {
+            background: #9d174d;
+            transform: scale(1.05);
+        }
+
+
+        /* ================= 3. محتوى الموقع الأساسي ================= */
+        #mainContent {
+            display: none;
+            width: 100%;
+            flex-direction: column;
+            align-items: center;
+            z-index: 2;
+        }
+
+        header {
+            text-align: center;
+            margin: 10px 0 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .theme-toggle-btn {
+            background: #be185d;
+            color: #fff;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            transition: transform 0.2s ease;
+        }
+
+        .theme-toggle-btn:hover {
+            transform: scale(1.05);
+        }
+
+        header h1 {
+            color: #be185d;
+            font-size: 2rem;
+            margin-bottom: 0;
+        }
+
+        header p {
+            color: #6b7280;
+            font-size: 1rem;
+        }
+
+        /* مشغل الأغنية */
+        .audio-box {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(8px);
+            border: 1.5px solid #fbcfe8;
+            padding: 10px 20px;
+            border-radius: 30px;
+            box-shadow: 0 8px 20px rgba(190, 24, 93, 0.1);
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .audio-btn {
+            background: #be185d;
+            color: #fff;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1rem;
+            box-shadow: 0 4px 10px rgba(190, 24, 93, 0.3);
+        }
+
+        .audio-info {
+            font-size: 0.95rem;
+            color: #be185d;
+            font-weight: 700;
+        }
+
+        /* عداد الوقت */
+        .counter-box {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(8px);
+            border: 1.5px solid #fbcfe8;
+            padding: 15px 25px;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(190, 24, 93, 0.1);
+            margin: 10px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .counter-title {
+            font-size: 0.95rem;
+            color: #be185d;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .counter-digits {
+            display: flex;
+            gap: 15px;
+            direction: ltr;
+        }
+
+        .time-segment {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 50px;
+        }
+
+        .time-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #881337;
+            background: #ffe4e6;
+            padding: 4px 10px;
+            border-radius: 8px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .time-label {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        /* لوحة الصور البولارويد */
+        .board {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 35px;
+            max-width: 950px;
+            width: 100%;
+            padding: 20px;
+        }
+
+        .polaroid-container {
+            width: 220px;
+            height: 290px;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .polaroid {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+            border-radius: 4px;
+        }
+
+        .polaroid-container.flipped .polaroid {
+            transform: rotateY(180deg);
+        }
+
+        .side {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            background: #fff;
+            padding: 12px 12px 25px 12px;
+            display: flex;
+            flex-direction: column;
+            border-radius: 4px;
+        }
+
+        .front img {
+            width: 100%;
+            height: 190px;
+            object-fit: cover;
+            border-radius: 2px;
+            background: #e5e7eb;
+        }
+
+        .front .caption {
+            text-align: center;
+            margin-top: 12px;
+            font-size: 0.95rem;
+            color: #4b5563;
+            font-weight: 600;
+        }
+
+        .back {
+            background: #fff1f2;
+            color: #881337;
+            transform: rotateY(180deg);
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            border: 2px dashed #fda4af;
+            border-radius: 4px;
+        }
+
+        .back p {
+            font-size: 0.9rem;
+            line-height: 1.5;
+            font-weight: 600;
+        }
+
+        .board > .polaroid-container:nth-child(1) { transform: rotate(-3deg); }
+        .board > .polaroid-container:nth-child(2) { transform: rotate(2deg); }
+        .polaroid-container:nth-child(3) { transform: rotate(-2deg); }
+        .polaroid-container:nth-child(4) { transform: rotate(3deg); }
+        .polaroid-container:nth-child(5) { transform: rotate(-1.5deg); }
+
+
+        /* قسم الألعاب (Test your love) */
+        .games-section {
+            width: 100%;
+            max-width: 900px;
+            margin: 20px auto;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            padding: 0 15px;
+        }
+
+        .game-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1.5px solid #fbcfe8;
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(190, 24, 93, 0.1);
+            text-align: center;
+        }
+
+        .game-card h3 {
+            color: #be185d;
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+        }
+
+        .quiz-box {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .quiz-question {
+            font-size: 1rem;
+            color: #881337;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .quiz-btn {
+            background: #fff1f2;
+            border: 1.5px solid #fda4af;
+            color: #881337;
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .quiz-btn:hover {
+            background: #be185d;
+            color: #fff;
+            border-color: #be185d;
+        }
+
+        .quiz-result {
+            margin-top: 15px;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #be185d;
+            min-height: 25px;
+        }
+
+
+        /* ================= 1. دفتر "ليه بحبك؟" ================= */
+        .reasons-section {
+            width: 100%;
+            max-width: 900px;
+            margin: 10px auto;
+            padding: 0 15px;
+        }
+
+        .reasons-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1.5px solid #fbcfe8;
+            padding: 25px;
+            border-radius: 18px;
+            box-shadow: 0 10px 25px rgba(190, 24, 93, 0.1);
+            text-align: center;
+        }
+
+        .reasons-card h3 {
+            color: #be185d;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+
+        .reason-box {
+            font-size: 1.1rem;
+            color: #881337;
+            font-weight: 700;
+            background: #fff1f2;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1.5px dashed #fda4af;
+            min-height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .reasons-btn {
+            background: #be185d;
+            color: #fff;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 20px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(190, 24, 93, 0.3);
+            transition: transform 0.2s ease;
+        }
+
+        .reasons-btn:hover {
+            background: #9d174d;
+            transform: scale(1.05);
+        }
+
+
+        /* ================= 2. زرار مفاجأة القلوب المتفجرة ================= */
+        .burst-section {
+            width: 100%;
+            max-width: 900px;
+            margin: 10px auto;
+            padding: 0 15px;
+            text-align: center;
+        }
+
+        .burst-btn {
+            background: linear-gradient(135deg, #f472b6, #be185d);
+            color: #fff;
+            border: none;
+            padding: 14px 35px;
+            border-radius: 35px;
+            font-size: 1.15rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(190, 24, 93, 0.4);
+            transition: transform 0.2s ease;
+        }
+
+        .burst-btn:hover {
+            transform: scale(1.08);
+        }
+
+
+        /* ================= 3. الخط الزمني لحكايتنا (Timeline) ================= */
+        .timeline-section {
+            width: 100%;
+            max-width: 900px;
+            margin: 15px auto;
+            padding: 0 15px;
+        }
+
+        .timeline-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1.5px solid #fbcfe8;
+            padding: 25px;
+            border-radius: 18px;
+            box-shadow: 0 10px 25px rgba(190, 24, 93, 0.1);
+        }
+
+        .timeline-card h3 {
+            color: #be185d;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .timeline-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            position: relative;
+        }
+
+        .timeline-item {
+            background: #fff1f2;
+            border: 1.5px solid #fda4af;
+            padding: 12px 20px;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .timeline-date {
+            font-size: 0.85rem;
+            color: #be185d;
+            font-weight: 700;
+        }
+
+        .timeline-text {
+            font-size: 1rem;
+            color: #881337;
+            font-weight: 600;
+        }
+
+
+        /* صندوق الهدايا السحري */
+        .gift-section {
+            width: 100%;
+            max-width: 900px;
+            margin: 10px auto;
+            padding: 0 15px;
+        }
+
+        .gift-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1.5px solid #fbcfe8;
+            padding: 25px;
+            border-radius: 18px;
+            box-shadow: 0 10px 25px rgba(190, 24, 93, 0.1);
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .gift-card:hover {
+            transform: scale(1.02);
+        }
+
+        .gift-card h3 {
+            color: #be185d;
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+
+        .gift-box-icon {
+            font-size: 2.8rem;
+            margin: 10px 0;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .gift-message {
+            font-size: 1.05rem;
+            color: #881337;
+            font-weight: 700;
+            margin-top: 12px;
+            padding: 12px;
+            background: #fff1f2;
+            border-radius: 12px;
+            border: 1.5px dashed #fda4af;
+            display: none;
+        }
+
+
+        /* مربع الكلام الرومانسي */
+        .love-notes-section {
+            width: 100%;
+            max-width: 900px;
+            margin: 10px auto 25px auto;
+            padding: 0 15px;
+        }
+
+        .notes-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1.5px solid #fbcfe8;
+            padding: 25px;
+            border-radius: 18px;
+            box-shadow: 0 10px 25px rgba(190, 24, 93, 0.1);
+            text-align: center;
+        }
+
+        .notes-card h3 {
+            color: #be185d;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+
+        .notes-container {
+            font-size: 1.05rem;
+            color: #881337;
+            line-height: 1.8;
+            font-weight: 600;
+            min-height: 70px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            background: #fff1f2;
+            border-radius: 12px;
+            border: 1px dashed #fda4af;
+        }
+
+
+        /* الصورة البانورامية الكبيرة في الأسفل */
+        .hero-banner-container {
+            width: 100%;
+            max-width: 950px;
+            height: 480px;
+            position: relative;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 20px 45px rgba(0,0,0,0.25);
+            margin: 10px auto 35px auto;
+            cursor: pointer;
+        }
+
+        .hero-banner-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .love-banner-badge {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.45);
+            backdrop-filter: blur(10px);
+            border: 1.5px solid rgba(255, 255, 255, 0.6);
+            padding: 10px 30px;
+            border-radius: 35px;
+            color: #fff;
+            font-size: 1.15rem;
+            font-weight: 700;
+            box-shadow: 0 0 25px rgba(244, 114, 182, 0.6);
+            letter-spacing: 1.5px;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        footer {
+            margin-top: 10px;
+            color: #9ca3af;
+            font-size: 0.9rem;
+        }
+
+
+        /* ================= تنسيق الوضع المظلم (Dark Mode) ================= */
+        body.dark-mode {
+            background-color: #0d1117;
+            background-image: radial-gradient(#30363d 1px, transparent 1px);
+            color: #c9d1d9;
+        }
+
+        body.dark-mode #lockScreen,
+        body.dark-mode #introScreen {
+            background-color: #0d1117;
+            background-image: radial-gradient(#30363d 1.5px, transparent 1.5px);
+        }
+
+        body.dark-mode .lock-card,
+        body.dark-mode .intro-card {
+            background: #161b22;
+            border: 2px solid #30363d;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+        }
+
+        body.dark-mode .lock-card h2,
+        body.dark-mode .intro-card h2 {
+            color: #f472b6;
+        }
+
+        body.dark-mode .lock-card p {
+            color: #8b949e;
+        }
+
+        body.dark-mode .intro-text {
+            background: #21262d;
+            border: 1px dashed #30363d;
+            color: #ffb7c5;
+        }
+
+        body.dark-mode .lock-input {
+            background: #21262d;
+            border: 2px solid #30363d;
+            color: #ffb7c5;
+        }
+
+        body.dark-mode .lock-input:focus {
+            border-color: #f472b6;
+        }
+
+        body.dark-mode .lock-btn,
+        body.dark-mode .next-btn {
+            background: #30363d;
+            color: #f472b6;
+            border: 1px solid #484f58;
+        }
+
+        body.dark-mode .lock-btn:hover,
+        body.dark-mode .next-btn:hover {
+            background: #21262d;
+        }
+
+        body.dark-mode header h1 {
+            color: #f472b6;
+            text-shadow: 0 0 10px rgba(244, 114, 182, 0.3);
+        }
+
+        body.dark-mode header p {
+            color: #8b949e;
+        }
+
+        body.dark-mode .theme-toggle-btn {
+            background: #30363d;
+            color: #f472b6;
+            border: 1px solid #484f58;
+        }
+
+        body.dark-mode .audio-box,
+        body.dark-mode .counter-box,
+        body.dark-mode .game-card,
+        body.dark-mode .reasons-card,
+        body.dark-mode .timeline-card,
+        body.dark-mode .gift-card,
+        body.dark-mode .notes-card {
+            background: #161b22;
+            border: 1.5px solid #30363d;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        body.dark-mode .audio-btn {
+            background: #30363d;
+            color: #f472b6;
+            border: 1px solid #484f58;
+        }
+
+        body.dark-mode .audio-info,
+        body.dark-mode .counter-title,
+        body.dark-mode .game-card h3,
+        body.dark-mode .reasons-card h3,
+        body.dark-mode .timeline-card h3,
+        body.dark-mode .gift-card h3,
+        body.dark-mode .notes-card h3,
+        body.dark-mode .quiz-result {
+            color: #f472b6;
+        }
+
+        body.dark-mode .time-value {
+            background: #21262d;
+            color: #ffb7c5;
+        }
+
+        body.dark-mode .time-label {
+            color: #8b949e;
+        }
+
+        body.dark-mode .quiz-question {
+            color: #ffb7c5;
+        }
+
+        body.dark-mode .quiz-btn {
+            background: #21262d;
+            border: 1.5px solid #30363d;
+            color: #f0f6fc;
+        }
+
+        body.dark-mode .quiz-btn:hover {
+            background: #30363d;
+            color: #f472b6;
+            border-color: #f472b6;
+        }
+
+        body.dark-mode .reason-box,
+        body.dark-mode .timeline-item,
+        body.dark-mode .gift-message,
+        body.dark-mode .notes-container {
+            background: #1f1a24;
+            border: 1.5px dashed #f472b6;
+            color: #ffb7c5;
+        }
+
+        body.dark-mode .timeline-date {
+            color: #ffb7c5;
+        }
+
+        body.dark-mode .timeline-text {
+            color: #f0f6fc;
+        }
+
+        body.dark-mode .reasons-btn {
+            background: #30363d;
+            color: #f472b6;
+            border: 1px solid #484f58;
+        }
+
+        body.dark-mode .polaroid {
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+        }
+
+        body.dark-mode .side {
+            background: #161b22;
+            border: 1px solid #30363d;
+        }
+
+        body.dark-mode .front img {
+            background: #21262d;
+        }
+
+        body.dark-mode .front .caption {
+            color: #f0f6fc;
+        }
+
+        body.dark-mode .back {
+            background: #1f1a24;
+            border: 2px dashed #f472b6;
+        }
+
+        body.dark-mode .back p {
+            color: #ffb7c5;
+        }
+
+        body.dark-mode .hero-banner-container {
+            box-shadow: 0 20px 45px rgba(0,0,0,0.7);
+            border: 1px solid #30363d;
+        }
+
+        body.dark-mode footer {
+            color: #8b949e;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- خلفية القلوب المتطايرة -->
+    <div class="floating-heart-container" id="floatingHearts"></div>
+
+    <!-- ملف الصوت المباشر -->
+    <audio id="bgMusic" loop>
+        <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf756.mp3?filename=romantic-guitars-112134.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- 1. شاشة الباسورد الأولى -->
+    <div id="lockScreen">
+        <div class="lock-card">
+            <h2>مفتاح الحكاية 🤍</h2>
+            <p>أدخل كلمة المرور لعرض لوحة ذكرياتنا الخاصة</p>
+            <input type="password" id="passwordInput" class="lock-input" placeholder="كلمة المرور" onkeypress="checkEnter(event)">
+            <button class="lock-btn" onclick="checkPassword()">دخول ❤️</button>
+            <div id="errorMsg" class="error-msg">كلمة المرور غير صحيحة، جرب تاني!</div>
+        </div>
+    </div>
+
+    <!-- 2. واجهة الترحيب (الكتابة المتتالية الحية) -->
+    <div id="introScreen">
+        <div class="intro-card">
+            <h2>ينور عيني</h2>
+            <div class="intro-text" id="typingText"></div>
+            <button class="next-btn" onclick="goToMainContent()">Next 🤍</button>
+        </div>
+    </div>
+
+    <!-- 3. المحتوى الرئيسي للموقع -->
+    <div id="mainContent">
+        <header>
+            <button class="theme-toggle-btn" id="themeBtn" onclick="toggleTheme()">🌙 وضع مظلم</button>
+            <h1>لوحة ذكرياتنا البولارويد 📸</h1>
+            <p>اضغط على أي صورة لتقلبها وتقرأ الرسالة السرية!</p>
+
+            <!-- مشغل الأغنية -->
+            <div class="audio-box" onclick="togglePlay()">
+                <button class="audio-btn" id="playBtn">▶</button>
+                <div class="audio-info">🎵 اغنيه حبنا</div>
+            </div>
+
+            <!-- عداد الوقت مع تاريخ البداية -->
+            <div class="counter-box">
+                <div class="counter-title">بدأنا نكتب حكايتنا سوا من 24 مايو 2025 ❤️</div>
+                <div class="counter-digits">
+                    <div class="time-segment">
+                        <span class="time-value" id="days">0</span>
+                        <span class="time-label">يوم</span>
+                    </div>
+                    <div class="time-segment">
+                        <span class="time-value" id="hours">0</span>
+                        <span class="time-label">ساعة</span>
+                    </div>
+                    <div class="time-segment">
+                        <span class="time-value" id="minutes">0</span>
+                        <span class="time-label">دقيقة</span>
+                    </div>
+                    <div class="time-segment">
+                        <span class="time-value" id="seconds">0</span>
+                        <span class="time-label">ثانية</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- لوحة الكروت البولارويد الخمسة -->
+        <div class="board">
+            <!-- الصورة الأولى -->
+            <div class="polaroid-container" onclick="this.classList.toggle('flipped')">
+                <div class="polaroid">
+                    <div class="side front">
+                        <img src="https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=400" alt="Memory">
+                        <div class="caption">أول خروجة 🌊</div>
+                    </div>
+                    <div class="side back">
+                        <p>اليوم ده كان من أجمل الأيام، ضحكتنا والجو هادي كان حاجة لا توصف ❤️</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- الصورة الثانية -->
+            <div class="polaroid-container" onclick="this.classList.toggle('flipped')">
+                <div class="polaroid">
+                    <div class="side front">
+                        <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=400" alt="Memory">
+                        <div class="caption">أجمل ضحكة 😊</div>
+                    </div>
+                    <div class="side back">
+                        <p>أكتر حاجة بحبها هي ضحكتك اللي بتنور أي مكان بكون موجود فيه ✨</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- الصورة الثالثة -->
+            <div class="polaroid-container" onclick="this.classList.toggle('flipped')">
+                <div class="polaroid">
+                    <div class="side front">
+                        <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=400" alt="Memory">
+                        <div class="caption">صُدفة العمر 🌸</div>
+                    </div>
+                    <div class="side back">
+                        <p>أحلى صدفة حصلت في حياتي كلها.. ربنا ما يحرمني من وجودك أبداً 🤍</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- الصورة الرابعة -->
+            <div class="polaroid-container" onclick="this.classList.toggle('flipped')">
+                <div class="polaroid">
+                    <div class="side front">
+                        <img src="https://images.unsplash.com/photo-1474552226712-ac0f0961a954?w=400" alt="Memory">
+                        <div class="caption">أول ضحكة من القلب ✨</div>
+                    </div>
+                    <div class="side back">
+                        <p>يومها ضحكتك فضلت منورة في بالي طول اليوم، حسيت إن الدنيا بقت أهدى وأحلى بكتير 💫</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- الصورة الخامسة -->
+            <div class="polaroid-container" onclick="this.classList.toggle('flipped')">
+                <div class="polaroid">
+                    <div class="side front">
+                        <img src="https://images.unsplash.com/photo-1534447677768-be436bb09401?w=400" alt="Memory">
+                        <div class="caption">أيام لا تعوض 🤍</div>
+                    </div>
+                    <div class="side back">
+                        <p>كل لحظة بتعدي وأنا معاك بتبقى أثمن ذكرى، ربنا يخليك ليا دايمًا ولا يحرمني منك 🌸</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- قسم الألعاب (Test your love) -->
+        <div class="games-section">
+            <div class="game-card">
+                <h3>💌 Test your love</h3>
+                <div class="quiz-box">
+                    <div class="quiz-question" id="quizQuestion">إيه أكتر حاجة بتميز ضحكتك عندي؟</div>
+                    <div class="quiz-options" id="quizOptions">
+                        <!-- الخيارات -->
+                    </div>
+                    <div class="quiz-result" id="quizResult"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 1. دفتر "ليه بحبك؟" -->
+        <div class="reasons-section">
+            <div class="reasons-card">
+                <h3>📖 ليه بحبك؟</h3>
+                <div class="reason-box" id="reasonBox">اضغط على الزرار وانت تعرف السبب😉</div>
+                <button class="reasons-btn" onclick="showNextReason()">اضغط</button>
+            </div>
+        </div>
+
+        <!-- 2. زرار مفاجأة القلوب المتفجرة -->
+        <div class="burst-section">
+            <button class="burst-btn" onclick="burstHearts()">فجر القلوب 😂</button>
+        </div>
+
+        <!-- 3. الخط الزمني لحكايتنا (Timeline) -->
+        <div class="timeline-section">
+            <div class="timeline-card">
+                <h3>⏳ محطات في حكايتنا</h3>
+                <div class="timeline-container">
+                    <div class="timeline-item">
+                        <span class="timeline-date">24 مايو 2025 🌸</span>
+                        <span class="timeline-text">بداية الحكاية وأجمل صدفة في عمري كله.</span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="timeline-date">الأيام الحلوة ✨</span>
+                        <span class="timeline-text">أول خروجة وأحلى ضحكة من القلب فضلت محفورة في بالي.</span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="timeline-date">دلوقتي وللأبد ❤️</span>
+                        <span class="timeline-text"> مكملين سوا وكل يوم حبنا بيزيد وبيبقى أجمل.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- صندوق الهدايا السحري -->
+        <div class="gift-section">
+            <div class="gift-card" onclick="openGift()">
+                <h3>افتح يا سمسم 😂♥</h3>
+                <div class="gift-box-icon" id="giftIcon">🎁</div>
+                <div class="gift-message" id="giftMessage">
+                    أحلى وأثمن هدية رزقني بيها ربنا هي أنتِ.. بحبك للأبد يا أجمل حاجة في عمري ❤️✨
+                </div>
+            </div>
+        </div>
+
+        <!-- مربع الكلام الرومانسي المتحرك المتتالي -->
+        <div class="love-notes-section">
+            <div class="notes-card">
+                <h3>📜 رسائل من قلبى ليك</h3>
+                <div class="notes-container" id="romanticNote">
+                    جاري تحميل الكلمات الجميلة...
+                </div>
+            </div>
+        </div>
+
+        <!-- الصورة الكبيرة البانورامية في الأسفل -->
+        <div class="hero-banner-container">
+            <img src="https://images.unsplash.com/photo-1494774157365-9e04c6720e47?w=1200" alt="Holding Hands">
+            <div class="love-banner-badge">بحبك ❤️</div>
+        </div>
+
+        <footer>
+            <p>صُنع بكل حب 🤍</p>
+        </footer>
+    </div>
+
+    <script>
+        // مولد القلوب المتطايرة في الخلفية
+        function createHeartParticle() {
+            const container = document.getElementById('floatingHearts');
+            if (!container) return;
+            const heart = document.createElement('div');
+            heart.classList.add('heart-particle');
+            heart.textContent = Math.random() > 0.4 ? '❤️' : '🌸';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.animationDuration = (4 + Math.random() * 3) + 's';
+            heart.style.fontSize = (1 + Math.random() * 1.2) + 'rem';
+            container.appendChild(heart);
+            setTimeout(() => {
+                heart.remove();
+            }, 7000);
+        }
+        setInterval(createHeartParticle, 600);
+
+        // تفجير قلوب إضافية عند الضغط على زر المفاجأة
+        function burstHearts() {
+            for (let i = 0; i < 25; i++) {
+                setTimeout(createHeartParticle, i * 40);
+            }
+        }
+
+        // دفتر "ليه بحبك؟"
+        const reasonsList = [
+            "بحبك عشان ضحكتك اللي بتنور أي مكان بكون موجود فيه ✨",
+            "بحبك عشان حنيتك وطيبتك اللي ملهاش مثيل ❤️",
+            "بحبك عشان أمان الدنيا كله بيكون وأنا جنبك 🌸",
+            "بحبك عشان دايماً بتفهميني من نظرة عيون 🤍",
+            "بحبك عشان وجودك بيدي طعم تاني لكل ثانية في حياتي 💫"
+        ];
+        let reasonIdx = 0;
+        function showNextReason() {
+            const box = document.getElementById('reasonBox');
+            box.style.opacity = 0;
+            setTimeout(() => {
+                box.textContent = reasonsList[reasonIdx];
+                box.style.opacity = 1;
+                reasonIdx = (reasonIdx + 1) % reasonsList.length;
+            }, 300);
+        }
+        document.getElementById('reasonBox').style.transition = 'opacity 0.3s ease';
+
+        // صندوق الهدايا السحري
+        function openGift() {
+            const msg = document.getElementById('giftMessage');
+            const icon = document.getElementById('giftIcon');
+            if (msg.style.display === 'block') {
+                msg.style.display = 'none';
+                icon.textContent = '🎁';
+            } else {
+                msg.style.display = 'block';
+                icon.textContent = '💖✨';
+            }
+        }
+
+        const messageText = "بحبك بكل حاجه في حياتي وبما اننا كملنا سنة سوا فحبيت احط كل حاجه بينا هنا تعالي نشوف كل حاجه حلوه بينا بحبك ❤️";
+        let i = 0;
+
+        // بدء تأثير الكتابة الحية
+        function startTypingEffect() {
+            const typingElement = document.getElementById('typingText');
+            typingElement.textContent = "";
+            i = 0;
+            function typeWriter() {
+                if (i < messageText.length) {
+                    typingElement.textContent += messageText.charAt(i);
+                    i++;
+                    setTimeout(typeWriter, 50);
+                }
+            }
+            typeWriter();
+        }
+
+        // التحقق من الباسورد
+        function checkPassword() {
+            const inputVal = document.getElementById('passwordInput').value.trim();
+            const errorMsg = document.getElementById('errorMsg');
+
+            if (inputVal === 'love') {
+                document.getElementById('lockScreen').style.display = 'none';
+                document.getElementById('introScreen').style.display = 'flex';
+                startTypingEffect();
+            } else {
+                errorMsg.style.display = 'block';
+                document.getElementById('passwordInput').value = '';
+            }
+        }
+
+        function checkEnter(event) {
+            if (event.key === 'Enter') {
+                checkPassword();
+            }
+        }
+
+        // الانتقال للموقع الأساسي وتشغيل الأغنية
+        function goToMainContent() {
+            const music = document.getElementById('bgMusic');
+            const playBtn = document.getElementById('playBtn');
+            
+            music.play().then(() => {
+                playBtn.textContent = '⏸';
+            }).catch(e => {
+                console.log("Audio play blocked");
+            });
+
+            document.getElementById('introScreen').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'flex';
+        }
+
+        // تشغيل / إيقاف الأغنية فوق
+        function togglePlay() {
+            const music = document.getElementById('bgMusic');
+            const playBtn = document.getElementById('playBtn');
+            if (music.paused) {
+                music.play();
+                playBtn.textContent = '⏸';
+            } else {
+                music.pause();
+                playBtn.textContent = '▶';
+            }
+        }
+
+        // تغيير الوضع (Dark/Light)
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const btn = document.getElementById('themeBtn');
+            
+            if (document.body.classList.contains('dark-mode')) {
+                btn.textContent = '☀️ وضع فاتح';
+            } else {
+                btn.textContent = '🌙 وضع مظلم';
+            }
+        }
+
+        // كود العداد
+        const startDate = new Date("2025-05-24T00:00:00");
+        function updateCounter() {
+            const now = new Date();
+            const diff = now - startDate;
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            const minutes = Math.floor((diff / 1000 / 60) % 60);
+            const seconds = Math.floor((diff / 1000) % 60);
+
+            const daysEl = document.getElementById('days');
+            const hoursEl = document.getElementById('hours');
+            const minutesEl = document.getElementById('minutes');
+            const secondsEl = document.getElementById('seconds');
+
+            if (daysEl) daysEl.textContent = days;
+            if (hoursEl) hoursEl.textContent = hours;
+            if (minutesEl) minutesEl.textContent = minutes;
+            if (secondsEl) secondsEl.textContent = seconds;
+        }
+        setInterval(updateCounter, 1000);
+        updateCounter();
+
+        // ================= اختبار الحب =================
+        const quizData = [
+            {
+                q: "إيه أكتر حاجة بتميز ضحكتك عندي؟",
+                options: ["إنها من القلب وبتنور الدنيا ✨", "صوتها العالي", "ملهاش سبب"],
+                correct: 0,
+                msg: "صح جداً! ضحكتك بتغير يومي كله ❤️"
+            },
+            {
+                q: "تاريخ بداية حكايتنا كان يوم إيه؟",
+                options: ["24 مايو 2025", "1 يناير", "عيد الفطر"],
+                correct: 0,
+                msg: "برافو عليك! أحلى تاريخ في عمري كله 🌸"
+            }
+        ];
+
+        let currentQuiz = 0;
+        function loadQuiz() {
+            const qEl = document.getElementById('quizQuestion');
+            const optEl = document.getElementById('quizOptions');
+            const resEl = document.getElementById('quizResult');
+            
+            resEl.textContent = "";
+            qEl.textContent = quizData[currentQuiz].q;
+            optEl.innerHTML = "";
+
+            quizData[currentQuiz].options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.classList.add('quiz-btn');
+                btn.textContent = opt;
+                btn.onclick = () => checkQuiz(idx);
+                optEl.appendChild(btn);
+            });
+        }
+
+        function checkQuiz(selectedIdx) {
+            const resEl = document.getElementById('quizResult');
+            if (selectedIdx === quizData[currentQuiz].correct) {
+                resEl.style.color = "#be185d";
+                resEl.textContent = quizData[currentQuiz].msg;
+                setTimeout(() => {
+                    currentQuiz = (currentQuiz + 1) % quizData.length;
+                    loadQuiz();
+                }, 2000);
+            } else {
+                resEl.style.color = "#e11d48";
+                resEl.textContent = "حاول تاني يا حب، أنت عارف الإجابة كويس! 😉";
+            }
+        }
+        loadQuiz();
+
+        // ================= الرسائل الرومانسية المتتالية تحت =================
+        const romanticNotes = [
+            "أنتِ أجمل صدفة غيرت حياتي للأبد 🤍",
+            "وجودك معايا بيخلي كل الأيام أحلى وأهدا ✨",
+            "مهما عدت أيام، حبك في قلبي بيزيد كل ثانية 🌸",
+            "ضحكتك هي النور اللي بينور طريقي دايماً ❤️",
+            "ربنا ما يحرمني منك ولا من وجودك جنبي أبداً 💫"
+        ];
+
+        let noteIndex = 0;
+        function showNextNote() {
+            const noteEl = document.getElementById('romanticNote');
+            if (noteEl) {
+                noteEl.style.opacity = 0;
+                setTimeout(() => {
+                    noteEl.textContent = romanticNotes[noteIndex];
+                    noteEl.style.opacity = 1;
+                    noteIndex = (noteIndex + 1) % romanticNotes.length;
+                }, 400);
+            }
+        }
+
+        document.getElementById('romanticNote').style.transition = 'opacity 0.4s ease';
+        setInterval(showNextNote, 4000);
+        showNextNote();
+    </script>
+
+</body>
+</html>
